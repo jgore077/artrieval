@@ -30,8 +30,8 @@ def visualContextualBins(metadata):
     nlp=download_spacy()
     prediction_file = "predictions.json"
     classifier=VisualContextualClassifier()
+    prediction_data = {}
     for idx1, entry in metadata.items():
-        prediction_data = {}
         if entry['description']:
             temp_vdict = {} # visual sentences
             temp_cdict = {} # contextual sentences
