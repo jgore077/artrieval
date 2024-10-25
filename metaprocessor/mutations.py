@@ -1,18 +1,10 @@
 # a file for housing all the mutation functions
-import spacy
-import json
-from spacy.cli import download
-from VisualContextualClassifier import VisualContextualClassifier
 
-def download_spacy():
-    # Downloads spacy model if not already downloaded
-    try:
-        nlp = spacy.load("en_core_web_sm")
-    except OSError:
-        print("Downloading 'en_core_web_sm' model...")
-        download("en_core_web_sm")
-        nlp = spacy.load("en_core_web_sm")
-    return nlp
+import json
+from VisualContextualClassifier import VisualContextualClassifier
+from .utils import download_spacy
+
+
 
 def splitMetaData(metadata):
     nlp=download_spacy()
@@ -58,3 +50,10 @@ def visualContextualBins(metadata):
             entry['contextual'] = None
     with open(prediction_file,'w',encoding='utf-8') as outputfile:
       outputfile.write(json.dumps(prediction_data,indent=4))
+      
+      
+
+FUNCTION_DICT={
+    "splitMetaData":splitMetaData,
+    "visualContextualBins":visualContextualBins,
+}
