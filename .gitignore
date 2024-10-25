@@ -3,4 +3,5 @@ artrieval_venv/
 images.tar.gz
 metadata.json
 images
+.vscode
 *.pyc

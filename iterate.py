@@ -5,7 +5,7 @@ import argparse
 parser=argparse.ArgumentParser()
 parser.add_argument("-m","--metadata",type=str,required=True)
 parser.add_argument("-i,","--iteration", type=str,required=True)
-parser.add_argument("-o","--output" ,type=str,required=True )
+parser.add_argument("-o","--output" ,type=str)
 
 args = parser.parse_args()
 
@@ -16,4 +16,4 @@ iteration=args.iteration
 if iteration not in ITERATION_DICT:
     raise KeyError(f"{iteration} not in {ITERATION_DICT.keys()}")
 
-processor.iterate(ITERATION_DICT[iteration],args.output)
+processor.iterate(ITERATION_DICT[iteration])
