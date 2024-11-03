@@ -50,13 +50,14 @@ def visualContextualBins(metadata):
             entry['contextual'] = None
     with open(prediction_file,'w',encoding='utf-8') as outputfile:
       outputfile.write(json.dumps(prediction_data,indent=4))
-      
-      
-def removeEmptyObjects(metadata:dict):
-    pass
+
+def removeEmptyObjects(metadata: dict):
+    for key in list(metadata.keys()):
+        if metadata[key]['description'] == "" or metadata[key]['visual'] is None or metadata[key]['visual'] == {}:
+            del metadata[key]
+
 
 FUNCTION_DICT={
     "splitMetaData":splitMetaData,
     "visualContextualBins":visualContextualBins,
-    "removeEmptyObjects":removeEmptyObjects,
 }
