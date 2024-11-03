@@ -52,8 +52,11 @@ def visualContextualBins(metadata):
       outputfile.write(json.dumps(prediction_data,indent=4))
       
       
+def removeEmptyObjects(metadata:dict):
+    pass
 
 FUNCTION_DICT={
     "splitMetaData":splitMetaData,
     "visualContextualBins":visualContextualBins,
+    "removeEmptyObjects":removeEmptyObjects,
 }
