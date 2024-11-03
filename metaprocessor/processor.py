@@ -13,7 +13,7 @@ class Processor():
     if output_path==self.metadata_path:
       raise FileExistsError("Cannot overwrite initial metadata file")
     with open(output_path,'w',encoding='utf-8') as outputfile:
-      outputfile.write(json.dumps(self.metadata,indent=4))
+      outputfile.write(json.dumps(self.metadata,indent=4,ensure_ascii=False))
       
   def iterate(self,iterate_function):
     iterate_function(self.metadata)
