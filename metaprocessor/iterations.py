@@ -13,7 +13,7 @@ def predictionsUncertaintyCheck(predictions:dict):
     print(f"{num_unsure_predictions} predictions were detected with a threshold of {THRESHOLD}")
     
 
-def makeQrelandQuerys(bins:dict,qrels_path,querys_path,as_is=False):
+def makeQrelAndQuerys(bins:dict,qrels_path,querys_path,as_is=False):
     # as-is querys of the entire description and are prefixed with 1
     # visual querys are prefixed with 0
     prefix=1 if as_is else 0
