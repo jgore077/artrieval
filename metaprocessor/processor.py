@@ -16,7 +16,7 @@ class Processor():
       outputfile.write(json.dumps(self.metadata,indent=4,ensure_ascii=False))
       
   def iterate(self,iterate_function,*args,**kwargs):
-    iterate_function(self.metadata,*args,**kwargs)
+    return iterate_function(self.metadata,*args,**kwargs)
 
   def validate_image(self, entry:dict, ignore_exception:bool)->bool:
     image_path = entry['file_path']
