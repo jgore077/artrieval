@@ -1,5 +1,5 @@
 # A file used for writing functions that iterate over the data
-from utils import assemble_visual_sentence
+from .utils import assemble_visual_sentence
 import json
 import csv
 
@@ -53,12 +53,12 @@ def makeQrelAndQuerys(bins:dict,qrels_path,querys_path,as_is=False):
         qrels.append([query_id,0,key,1])
         querys[query_id]=bins[key]["description"] if as_is else ' '.join(bins[key]["visual"].values())
 
-    with open(qrels_path,'w',encoding="utf-8") as qrel_file:
+    with open(qrels_path,'w',encoding="utf-8",newline="") as qrel_file:
         writer=csv.writer(qrel_file, delimiter='\t',quoting=csv.QUOTE_MINIMAL)
         for row in qrels:
             writer.writerow(row)
             
-    with open(querys,'w',encoding='utf-8') as query_file:
+    with open(querys_path,'w',encoding='utf-8') as query_file:
         query_file.write(json.dumps(querys,indent=4,ensure_ascii=False))
 
 def findDuplicateQuerys(metadata:dict)->tuple[dict[str,list],dict[str,list]]:
@@ -76,7 +76,8 @@ def findDuplicateQuerys(metadata:dict)->tuple[dict[str,list],dict[str,list]]:
         else:
              as_is[description].append(key)
              
-    return {k: v for k, v in visual.items() if len(v) > 2},{k: v for k, v in as_is.items() if len(v) > 2}
+    # We filter out single occurences with these comprehensions, only returning querys with 2 or more duplicates
+    return {k: v for k, v in visual.items() if len(v) > 1},{k: v for k, v in as_is.items() if len(v) > 1}
 
 ITERATION_DICT={
     "predictionsUncertaintyCheck":predictionsUncertaintyCheck
