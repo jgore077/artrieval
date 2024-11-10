@@ -56,6 +56,13 @@ def removeEmptyObjects(metadata: dict):
         if metadata[key]['description'] == "" or metadata[key]['visual'] is None or metadata[key]['visual'] == {}:
             del metadata[key]
 
+def removeDuplicates(metadata:dict, visual_duplicates:dict, as_is_duplicates:dict):
+    for v_dupe_keys, a_dupe_keys in zip(visual_duplicates.values(), as_is_duplicates.values()):
+        for v_key, a_key in zip(v_dupe_keys[1:], a_dupe_keys[1:]): # only keep first instance of dupes
+            if v_key in metadata:
+                del metadata[v_key]
+            if a_key in metadata:
+                del metadata[a_key]
 
 FUNCTION_DICT={
     "splitMetaData":splitMetaData,

@@ -8,8 +8,8 @@ class Processor():
     with open(metadata_path,'r',encoding='utf-8') as file:
       self.metadata=json.loads(file.read())
 
-  def mutate(self,mutate_function,output_path):
-    mutate_function(self.metadata)
+  def mutate(self,mutate_function,output_path,*args,**kwargs):
+    mutate_function(self.metadata,*args,**kwargs)
     if output_path==self.metadata_path:
       raise FileExistsError("Cannot overwrite initial metadata file")
     with open(output_path,'w',encoding='utf-8') as outputfile:
