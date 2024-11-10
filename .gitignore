@@ -2,5 +2,7 @@ images/
 images.tar.gz
 metadata.json
 images
+a_dupes.json
+v_dupes.json
 .vscode
 *.pyc
