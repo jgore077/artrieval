@@ -1,2 +1,2 @@
 # artrieval
-This repo houses are experiments with cross-modal artwork retrieval.
+This repo houses our experiments with cross-modal artwork retrieval.

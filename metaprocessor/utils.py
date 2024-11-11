@@ -10,3 +10,6 @@ def download_spacy():
         download("en_core_web_sm")
         nlp = spacy.load("en_core_web_sm")
     return nlp
+
+def assemble_visual_sentence(vdict)->str:
+    return ' '.join(list(vdict.values()))
