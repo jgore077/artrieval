@@ -1,6 +1,15 @@
-from long_clip.model import longclip
+from long_clip.model import longclip, tokenize
 import torch
 import format
+
+# return true if string can fit model's context size
+def checkFit(text:str)->bool:
+    try:
+        tokenize(text)
+        return True
+    except Exception as e:
+        return False
+
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model, preprocess = longclip.load("./long_clip/checkpoints/longclip-B.pt", device=device)
