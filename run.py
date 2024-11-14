@@ -7,7 +7,7 @@ def checkFit(text:str)->bool:
     try:
         tokenize(text)
         return True
-    except Exception as e:
+    except RuntimeError as e:
         return False
 
 
