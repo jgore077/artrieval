@@ -1,5 +1,5 @@
 # A file used for writing functions that iterate over the data
-from .utils import assemble_visual_sentence
+from .utils import assemble_visual_description
 import json
 import csv
 
@@ -55,7 +55,7 @@ def makeQrelAndQuerys(bins:dict,qrels_path,querys_path,duplicates,as_is=False):
         if as_is:
             query=bins[key]["description"]
         else:
-            query=assemble_visual_sentence(bins[key]["visual"])
+            query=assemble_visual_description(bins[key]["visual"])
         
         skip=False
         # If the query has duplicates we enter this loop
@@ -84,7 +84,7 @@ def findDuplicateQuerys(metadata:dict)->tuple[dict[str,list],dict[str,list]]:
     visual={}
     as_is={}
     for key in metadata:
-        vsent=assemble_visual_sentence(metadata[key]["visual"])
+        vsent=assemble_visual_description(metadata[key]["visual"])
         description=metadata[key]["description"]
         if vsent not in visual:
             visual[vsent]=[key]
