@@ -30,6 +30,7 @@ def visualContextualBins(metadata):
             temp_sent_dict = {} # {sentence#: {"v/c":probability}}
             for idx2, sentence in enumerate(nlp(entry["description"]).sents):
                 sentence=str(sentence)
+                # check here for em dash and extra spaces at the end of sentences.
                 temp_pred_dict = {} # {"v/c":probability}
                 vis_con = classifier.predict(sentence)
                 if vis_con['visual'] >= vis_con['contextual']:
