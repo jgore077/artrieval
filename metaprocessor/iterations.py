@@ -14,13 +14,16 @@ def predictionsUncertaintyCheck(predictions:dict):
                 num_unsure_predictions+=1
     print(f"{num_unsure_predictions} predictions were detected with a threshold of {THRESHOLD}")
 
-def countBinFields(predictions:dict, result_path:str):
+def countBinFields(metadata:dict, result_path:str):
     # get counts on desired aspects of metadata
     results = {}
+    as_is_description_lengths = []
+    visual_description_lengths = []
     visual_sentences_length = 0
     contextual_sentences_length = 0
-    for sample in predictions.values():
-        if sample["visual"] and sample["contextual"]:
+    for sample in metadata.values():
+        if sample["visual"] and sample["contextual"]: # if sample has visual and contextual sentences
+            visual_description_lengths.append(len(assemble_visual_description(sample["visual"])))
             results["visual_sent_count"] = results.get("visual_sent_count", 0) + len(sample["visual"])
             results["contextual_sent_count"] = results.get("contextual_sent_count", 0) + len(sample["contextual"])
             results["visual_samples"] = results.get("visual_samples", 0) + 1
@@ -29,19 +32,26 @@ def countBinFields(predictions:dict, result_path:str):
                 visual_sentences_length += len(vSentence.split())
             for cSentence in sample["contextual"].values():
                 contextual_sentences_length += len(cSentence.split())
-        elif sample["visual"]:
+        elif sample["visual"]: # if sample only has visual sentences
+            visual_description_lengths.append(len(sample["description"]))
             results["visual_sent_count"] = results.get("visual_sent_count", 0) + len(sample["visual"])
             results["visual_samples"] = results.get("visual_samples", 0) + 1 
             for vSentence in sample["visual"].values():
                 visual_sentences_length += len(vSentence.split())
+        as_is_description_lengths.append(len(sample["description"]))
+    results["avg_len_as_is_description"] = sum(as_is_description_lengths) / len(as_is_description_lengths)
+    results["avg_len_visual_description"] = sum(visual_description_lengths) / len(visual_description_lengths)
+    results["max_len_as_is_description"] = max(as_is_description_lengths)
+    results["max_len_visual_description"] = max(visual_description_lengths)
+    results["min_len_as_is_description"] = min(as_is_description_lengths)
+    results["min_len_visual_description"] = min(visual_description_lengths)
     results["average_len_visual"] = visual_sentences_length / results["visual_sent_count"]
     results["average_len_contextual"] = contextual_sentences_length / results["contextual_sent_count"]
-    results["average_len_all"] = (visual_sentences_length + contextual_sentences_length) / (results["visual_sent_count"] + results["contextual_sent_count"])
+    results["average_len_sentence"] = (visual_sentences_length + contextual_sentences_length) / (results["visual_sent_count"] + results["contextual_sent_count"])
 
     with open(result_path, "w") as f:
         json.dump(results, f, indent=4)
     
-
 def makeQrelAndQuerys(bins:dict,qrels_path,querys_path,duplicates,as_is=False):
     # as-is querys of the entire description and are prefixed with 1
     # visual querys are prefixed with 0
