@@ -5,7 +5,7 @@ from metaprocessor import Processor,countBinFields
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python countBinFields.py <input_file.json> <output_file.json>")
+        print("Usage: python scripts/countBinFields.py <input_file.json> <output_file.json>")
         sys.exit(1)
 
     input_file = sys.argv[1]

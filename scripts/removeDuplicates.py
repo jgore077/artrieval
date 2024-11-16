@@ -6,7 +6,7 @@ from metaprocessor import Processor,removeDuplicates
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python removeDuplicates.py <input_file.json> <output_file.json>")
+        print("Usage: python scripts/removeDuplicates.py <input_file.json> <output_file.json>")
         sys.exit(1)
 
     input_file = sys.argv[1]
