@@ -1,5 +1,5 @@
 # A file used for writing functions that iterate over the data
-from .utils import assemble_visual_sentence
+from .utils import assemble_visual_description
 import json
 import csv
 
@@ -42,16 +42,35 @@ def countBinFields(predictions:dict, result_path:str):
         json.dump(results, f, indent=4)
     
 
-def makeQrelAndQuerys(bins:dict,qrels_path,querys_path,as_is=False):
+def makeQrelAndQuerys(bins:dict,qrels_path,querys_path,duplicates,as_is=False):
     # as-is querys of the entire description and are prefixed with 1
     # visual querys are prefixed with 0
     prefix="1" if as_is else "0"
     qrels=[]
     querys={}
+    query=None
     for key in bins:
         query_id=prefix+key
+    
+        if as_is:
+            query=bins[key]["description"]
+        else:
+            query=assemble_visual_description(bins[key]["visual"])
+        
+        skip=False
+        # If the query has duplicates we enter this loop
+        if query in duplicates:
+            duplicate_querys=duplicates[query]
+            for id in duplicate_querys:
+                # if it has already been saved we set query_id to the previous entry
+                # We also set a boolean variable that determines if it gets added to the .json file
+                if prefix+id in querys:
+                    query_id=prefix+id
+                    skip=True
+        
         qrels.append([query_id,0,key,1])
-        querys[query_id]=bins[key]["description"] if as_is else ' '.join(bins[key]["visual"].values())
+        if not skip:
+            querys[query_id]=query
 
     with open(qrels_path,'w',encoding="utf-8",newline="") as qrel_file:
         writer=csv.writer(qrel_file, delimiter='\t',quoting=csv.QUOTE_MINIMAL)
@@ -65,7 +84,7 @@ def findDuplicateQuerys(metadata:dict)->tuple[dict[str,list],dict[str,list]]:
     visual={}
     as_is={}
     for key in metadata:
-        vsent=assemble_visual_sentence(metadata[key]["visual"])
+        vsent=assemble_visual_description(metadata[key]["visual"])
         description=metadata[key]["description"]
         if vsent not in visual:
             visual[vsent]=[key]
