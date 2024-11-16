@@ -1,6 +1,7 @@
 # a file for housing all the mutation functions
 
 import json
+import random
 from VisualContextualClassifier import VisualContextualClassifier
 from .utils import download_spacy
 
@@ -62,6 +63,26 @@ def removeDuplicates(metadata:dict, visual_duplicates:dict):
         for v_key in v_dupe_keys[1:]: # only keep first instance of dupes
             if v_key in metadata:
                 del metadata[v_key]
+
+def setSplit(metadata:dict):
+    keys = list(metadata.keys())
+    random.shuffle(keys)
+
+    total = len(keys)
+    train_end = int(total * .9)
+    val_end = train_end + int(total * .05)
+
+    train_keys = keys[:train_end]
+    val_keys = keys[train_end:val_end]
+    test_keys = keys[val_end:]
+
+    pulldict = metadata.copy()
+    metadata.clear()
+
+    metadata['train'] = {key: pulldict[key] for key in train_keys}
+    metadata['val'] = {key: pulldict[key] for key in val_keys}
+    metadata['test'] = {key: pulldict[key] for key in test_keys}
+    
 
 FUNCTION_DICT={
     "splitMetaData":splitMetaData,
