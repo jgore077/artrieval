@@ -1,5 +1,5 @@
 # A file used for writing functions that iterate over the data
-from .utils import assemble_visual_description
+from .utils import assemble_visual_description,write_qrel,write_querys
 import json
 import csv
 
@@ -52,7 +52,8 @@ def countBinFields(metadata:dict, result_path:str):
     with open(result_path, "w") as f:
         json.dump(results, f, indent=4)
     
-def makeQrelAndQuerys(bins:dict,qrels_path,querys_path,duplicates,as_is=False):
+
+def makeQrelAndQuerys(bins:dict,qrels_path,querys_path,duplicates,as_is=False,write=True):
     # as-is querys of the entire description and are prefixed with 1
     # visual querys are prefixed with 0
     prefix="1" if as_is else "0"
@@ -81,14 +82,14 @@ def makeQrelAndQuerys(bins:dict,qrels_path,querys_path,duplicates,as_is=False):
         qrels.append([query_id,0,key,1])
         if not skip:
             querys[query_id]=query
-
-    with open(qrels_path,'w',encoding="utf-8",newline="") as qrel_file:
-        writer=csv.writer(qrel_file, delimiter='\t',quoting=csv.QUOTE_MINIMAL)
-        for row in qrels:
-            writer.writerow(row)
-            
-    with open(querys_path,'w',encoding='utf-8') as query_file:
-        query_file.write(json.dumps(querys,indent=4,ensure_ascii=False))
+    
+    # Returns the values instead of writing them to a file 
+    if not write:
+        return querys,qrels
+    
+    
+    write_querys(querys_path,querys)
+    write_qrel(qrels_path,qrels)
 
 def findDuplicateQuerys(metadata:dict)->tuple[dict[str,list],dict[str,list]]:
     visual={}
