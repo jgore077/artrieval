@@ -35,8 +35,8 @@ def visualContextualBins(metadata:dict):
             temp_cdict = {} # contextual sentences
             temp_sent_dict = {} # {sentence#: {"v/c":probability}}
             for idx2, sentence in enumerate(nlp(entry["description"]).sents):
-                sentence=str(sentence)
-                processed_description.append(sentence.strip())
+                sentence=str(sentence).strip()
+                processed_description.append(sentence)
                 temp_pred_dict = {} # {"v/c":probability}
                 vis_con = classifier.predict(sentence)
                 if vis_con['visual'] >= vis_con['contextual']:
@@ -58,6 +58,15 @@ def visualContextualBins(metadata:dict):
             entry['contextual'] = None
     with open(prediction_file,'w',encoding='utf-8') as outputfile:
       outputfile.write(json.dumps(prediction_data,indent=4))
+
+def removeTrailingSpaces(metadata:dict):
+    for entry in metadata.values():
+        if entry['visual']:
+            for idx, sentence in entry['visual'].items():
+                entry['visual'][idx] = sentence.strip()
+        if entry['contextual']:
+            for idx, sentence in entry['contextual'].items():
+                entry['contextual'][idx] = sentence.strip()
 
 def removeEmptyObjects(metadata:dict):
     """
