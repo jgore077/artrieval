@@ -59,8 +59,9 @@ class Evaluator():
     def _make_image_embeddings(self):
         files=getImagePaths(self.metadata)
         images=preprocessImages(files,self.preprocess,self.device)
-        torch.save(images,self.embeddings_file)
-        self.embeddings=images
+        embeddings=self.model.encode_image(images)
+        torch.save(embeddings,self.embeddings_file)
+        self.embeddings=embeddings
     
     
     def _load_metadata(self):
@@ -80,4 +81,5 @@ class Evaluator():
         if type(querys)==str:
             querys=load_querys(querys)
         encoded_querys=longclip.tokenize(list(querys.values()),truncate=True).to(self.device)
-        scores=sim_matrix(encoded_querys,self.embeddings)
+        text_features = self.model.encode_text(encoded_querys)
+        scores=sim_matrix(self.embeddings,text_features)

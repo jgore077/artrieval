@@ -18,7 +18,7 @@ def preprocessImages(file_paths:list[str],preproccess,device):
     images = []
     for file_path in file_paths:
          images.append(preproccess(Image.open(file_path)).unsqueeze(0).to(device))
-    return images
+    return torch.cat(images, dim=0)
 
 # convert our data into input-ready format
 def dataToInput(file_path:str, image_preprocess, device)->Tuple[torch.Tensor, torch.Tensor, dict]:
