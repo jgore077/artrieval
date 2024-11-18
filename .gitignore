@@ -6,5 +6,5 @@ a_dupes.json
 v_dupes.json
 .vscode
 *.pyc
-long_clip/checkpoints/longclip-B.pt
+long_clip/checkpoints/**/*.pt
 .venv
