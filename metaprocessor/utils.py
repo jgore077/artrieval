@@ -1,5 +1,7 @@
 from spacy.cli import download
 import spacy
+import json
+import csv
 
 def download_spacy():
     # Downloads spacy model if not already downloaded
@@ -13,3 +15,26 @@ def download_spacy():
 
 def assemble_visual_description(vdict)->str:
     return ' '.join(list(vdict.values()))
+
+
+def write_qrel(qrels_path,qrels):
+       """
+       Writes a 2d array of qrels into the file at qrels_path.
+       The format must be as follows:
+       [
+           [query_id,0,document_id,relevance]
+           ...
+       ]
+       """
+       with open(qrels_path,'w',encoding="utf-8",newline="") as qrel_file:
+        writer=csv.writer(qrel_file, delimiter='\t',quoting=csv.QUOTE_MINIMAL)
+        for row in qrels:
+            writer.writerow(row)
+            
+
+def write_querys(querys_path,querys):
+    """
+    Writes a querys file (.json) to the file at querys_path
+    """
+    with open(querys_path,'w',encoding='utf-8') as query_file:
+        query_file.write(json.dumps(querys,indent=4,ensure_ascii=False))

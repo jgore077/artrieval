@@ -1,5 +1,5 @@
 # A file used for writing functions that iterate over the data
-from .utils import assemble_visual_description
+from .utils import assemble_visual_description,write_qrel,write_querys
 import json
 import csv
 import random
@@ -89,8 +89,9 @@ def makeQrelAndQuerys(bins:dict,qrels_path,querys_path,duplicates,as_is=False,wr
         return querys,qrels
     
     
-    #write_querys(querys_path,querys)
-    #write_qrel(qrels_path,qrels)
+
+    write_querys(querys_path,querys)
+    write_qrel(qrels_path,qrels)
 
 def findDuplicateQuerys(metadata:dict)->tuple[dict[str,list],dict[str,list]]:
     visual={}
