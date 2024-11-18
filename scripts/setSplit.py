@@ -4,13 +4,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.
 from metaprocessor import Processor, setSplit
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python setSplit.py <input_file.json> <output_file.json>")
+    if len(sys.argv) != 2:
+        print("Usage: python scripts/setSplit.py <input_file.json>")
         sys.exit(1)
 
     input_file = sys.argv[1]
-    cleaned_file = sys.argv[2]
 
     processor=Processor(input_file)
 
-    processor.mutate(setSplit, cleaned_file)
+    processor.iterate(setSplit)

@@ -2,6 +2,7 @@
 from .utils import assemble_visual_description
 import json
 import csv
+import random
 
 
 def predictionsUncertaintyCheck(predictions:dict):
@@ -52,7 +53,8 @@ def countBinFields(metadata:dict, result_path:str):
     with open(result_path, "w") as f:
         json.dump(results, f, indent=4)
     
-def makeQrelAndQuerys(bins:dict,qrels_path,querys_path,duplicates,as_is=False):
+
+def makeQrelAndQuerys(bins:dict,qrels_path,querys_path,duplicates,as_is=False,write=True):
     # as-is querys of the entire description and are prefixed with 1
     # visual querys are prefixed with 0
     prefix="1" if as_is else "0"
@@ -81,14 +83,14 @@ def makeQrelAndQuerys(bins:dict,qrels_path,querys_path,duplicates,as_is=False):
         qrels.append([query_id,0,key,1])
         if not skip:
             querys[query_id]=query
-
-    with open(qrels_path,'w',encoding="utf-8",newline="") as qrel_file:
-        writer=csv.writer(qrel_file, delimiter='\t',quoting=csv.QUOTE_MINIMAL)
-        for row in qrels:
-            writer.writerow(row)
-            
-    with open(querys_path,'w',encoding='utf-8') as query_file:
-        query_file.write(json.dumps(querys,indent=4,ensure_ascii=False))
+    
+    # Returns the values instead of writing them to a file 
+    if not write:
+        return querys,qrels
+    
+    
+    #write_querys(querys_path,querys)
+    #write_qrel(qrels_path,qrels)
 
 def findDuplicateQuerys(metadata:dict)->tuple[dict[str,list],dict[str,list]]:
     visual={}
@@ -107,6 +109,38 @@ def findDuplicateQuerys(metadata:dict)->tuple[dict[str,list],dict[str,list]]:
              
     # We filter out single occurences with these comprehensions, only returning querys with 2 or more duplicates
     return {k: v for k, v in visual.items() if len(v) > 1},{k: v for k, v in as_is.items() if len(v) > 1}
+
+def setSplit(metadata:dict):
+    processed_data = {
+        str(key): " ".join(entry["visual"].values()) 
+        for key, entry in metadata.items() if "visual" in entry
+    }
+    
+    # Shuffle the keys
+    keys = list(processed_data.keys())
+    random.shuffle(keys)
+    
+    # Calculate split sizes
+    total = len(keys)
+    train_size = int(total * .9)
+    val_size = int(total * .05)
+    
+    # Split the data
+    train_keys = keys[:train_size]
+    val_keys = keys[train_size:train_size + val_size]
+    test_keys = keys[train_size + val_size:]
+    
+    train_data = {metadata[key]['file_path']: processed_data[key] for key in train_keys}
+    val_data = {metadata[key]['file_path']: processed_data[key] for key in val_keys}
+    test_data = {metadata[key]['file_path']: processed_data[key] for key in test_keys}
+    
+    # Save the splits into separate JSON files
+    with open("train.json", "w") as f:
+        json.dump(train_data, f, indent=4, ensure_ascii=False)
+    with open("val.json", "w") as f:
+        json.dump(val_data, f, indent=4, ensure_ascii=False)
+    with open("test.json", "w") as f:
+        json.dump(test_data, f, indent=4, ensure_ascii=False)
 
 ITERATION_DICT={
     "predictionsUncertaintyCheck":predictionsUncertaintyCheck
