@@ -2,6 +2,7 @@
 from .utils import assemble_visual_description,write_qrel,write_querys
 import json
 import csv
+import random
 
 
 def predictionsUncertaintyCheck(predictions:dict):
@@ -88,6 +89,7 @@ def makeQrelAndQuerys(bins:dict,qrels_path,querys_path,duplicates,as_is=False,wr
         return querys,qrels
     
     
+
     write_querys(querys_path,querys)
     write_qrel(qrels_path,qrels)
 
@@ -108,6 +110,44 @@ def findDuplicateQuerys(metadata:dict)->tuple[dict[str,list],dict[str,list]]:
              
     # We filter out single occurences with these comprehensions, only returning querys with 2 or more duplicates
     return {k: v for k, v in visual.items() if len(v) > 1},{k: v for k, v in as_is.items() if len(v) > 1}
+
+import os
+import random
+import json
+
+def setSplit(metadata: dict):
+    processed_data = {
+        str(key): " ".join(entry["visual"].values()) 
+        for key, entry in metadata.items() if "visual" in entry
+    }
+    
+    # Shuffle the keys
+    keys = list(processed_data.keys())
+    random.shuffle(keys)
+    
+
+    total = len(keys)
+    train_size = int(total * .9)
+    val_size = int(total * .05)
+    
+    train_keys = keys[:train_size]
+    val_keys = keys[train_size:train_size + val_size]
+    test_keys = keys[train_size + val_size:]
+    
+    train_data = {metadata[key]['file_path']: processed_data[key] for key in train_keys}
+    val_data = {metadata[key]['file_path']: processed_data[key] for key in val_keys}
+    test_data = {metadata[key]['file_path']: processed_data[key] for key in test_keys}
+    
+    splits_folder = 'data/splits'
+    os.makedirs(splits_folder, exist_ok=True)
+
+    with open(os.path.join(splits_folder, "train.json"), "w") as f:
+        json.dump(train_data, f, indent=4, ensure_ascii=False)
+    with open(os.path.join(splits_folder, "val.json"), "w") as f:
+        json.dump(val_data, f, indent=4, ensure_ascii=False)
+    with open(os.path.join(splits_folder, "test.json"), "w") as f:
+        json.dump(test_data, f, indent=4, ensure_ascii=False)
+
 
 ITERATION_DICT={
     "predictionsUncertaintyCheck":predictionsUncertaintyCheck
