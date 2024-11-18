@@ -82,4 +82,4 @@ class Evaluator():
             querys=load_querys(querys)
         encoded_querys=longclip.tokenize(list(querys.values()),truncate=True).to(self.device)
         text_features = self.model.encode_text(encoded_querys)
-        scores=sim_matrix(self.embeddings,text_features)
+        scores=sim_matrix(self.embedd,text_features)
