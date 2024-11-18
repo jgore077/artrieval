@@ -1,6 +1,7 @@
 # A file used for writing functions that iterate over the data
 from .utils import assemble_visual_description,write_qrel,write_querys
 import json
+import os
 import csv
 import random
 
@@ -111,21 +112,15 @@ def findDuplicateQuerys(metadata:dict)->tuple[dict[str,list],dict[str,list]]:
     # We filter out single occurences with these comprehensions, only returning querys with 2 or more duplicates
     return {k: v for k, v in visual.items() if len(v) > 1},{k: v for k, v in as_is.items() if len(v) > 1}
 
-import os
-import random
-import json
-
 def setSplit(metadata: dict):
     processed_data = {
         str(key): " ".join(entry["visual"].values()) 
         for key, entry in metadata.items() if "visual" in entry
     }
     
-    # Shuffle the keys
     keys = list(processed_data.keys())
     random.shuffle(keys)
     
-
     total = len(keys)
     train_size = int(total * .9)
     val_size = int(total * .05)
@@ -137,6 +132,10 @@ def setSplit(metadata: dict):
     train_data = {metadata[key]['file_path']: processed_data[key] for key in train_keys}
     val_data = {metadata[key]['file_path']: processed_data[key] for key in val_keys}
     test_data = {metadata[key]['file_path']: processed_data[key] for key in test_keys}
+
+    train_original = {key: metadata[key] for key in train_keys}
+    val_original = {key: metadata[key] for key in val_keys}
+    test_original = {key: metadata[key] for key in test_keys}
     
     splits_folder = 'data/splits'
     os.makedirs(splits_folder, exist_ok=True)
@@ -147,6 +146,14 @@ def setSplit(metadata: dict):
         json.dump(val_data, f, indent=4, ensure_ascii=False)
     with open(os.path.join(splits_folder, "test.json"), "w") as f:
         json.dump(test_data, f, indent=4, ensure_ascii=False)
+
+    with open(os.path.join(splits_folder, "train_original.json"), "w") as f:
+        json.dump(train_original, f, indent=4, ensure_ascii=False)
+    with open(os.path.join(splits_folder, "val_original.json"), "w") as f:
+        json.dump(val_original, f, indent=4, ensure_ascii=False)
+    with open(os.path.join(splits_folder, "test_original.json"), "w") as f:
+        json.dump(test_original, f, indent=4, ensure_ascii=False)
+
 
 
 ITERATION_DICT={
