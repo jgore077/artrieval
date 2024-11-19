@@ -11,4 +11,5 @@ evaluator=Evaluator(
     device
 )
 
-evaluator.search(assemble_visual_queries("data/splits/test_original.json"))
+scores=evaluator.search(assemble_visual_queries("data/splits/test_original.json"))
+print("p@1",evaluator.precision_at_1(scores))

@@ -100,3 +100,13 @@ class Evaluator():
                 text_features=torch.cat([text_features,self.model.encode_text(chunk)])
         scores=sim_matrix(text_features,self.embeddings)
         return scores
+    
+    def precision_at_1(self,scores_matrix):
+        p1s=0
+        for i in range(scores_matrix.shape[0]):
+            row=scores_matrix[i,:]
+            max_index=torch.argmax(row)
+            if max_index.item()==i:
+                p1s+=1
+        return p1s/scores_matrix.shape[0]
+    
