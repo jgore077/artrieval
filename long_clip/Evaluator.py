@@ -34,7 +34,7 @@ class Evaluator():
         self.embeddings_file:str=embeddings_file
         self.metrics=metrics
         self._load_metadata()
-        self._load_embeddings()
+        self._make_image_embeddings()
         self._build_keymap()
         
         
@@ -59,7 +59,17 @@ class Evaluator():
     def _make_image_embeddings(self):
         files=getImagePaths(self.metadata)
         images=preprocessImages(files,self.preprocess,self.device)
-        embeddings=self.model.encode_image(images)
+        embeddings=None
+        num_iters=0
+        with torch.no_grad():
+            for chunk in torch.split(images, 20):
+                torch.cuda.empty_cache()
+                num_iters+=1
+                if embeddings==None:
+                    embeddings=self.model.encode_image(chunk)
+                    continue
+                embeddings=torch.cat((embeddings,self.model.encode_image(chunk)),dim=0)
+            print(num_iters)
         torch.save(embeddings,self.embeddings_file)
         self.embeddings=embeddings
     
@@ -81,5 +91,12 @@ class Evaluator():
         if type(querys)==str:
             querys=load_querys(querys)
         encoded_querys=longclip.tokenize(list(querys.values()),truncate=True).to(self.device)
-        text_features = self.model.encode_text(encoded_querys)
-        scores=sim_matrix(self.embedd,text_features)
+        text_features = None
+        with torch.no_grad():
+            for chunk in torch.split(encoded_querys, 20):
+                if text_features==None:
+                    text_features=self.model.encode_text(chunk)
+                    continue
+                text_features=torch.cat([text_features,self.model.encode_text(chunk)])
+        scores=sim_matrix(text_features,self.embeddings)
+        return scores
