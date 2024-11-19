@@ -1,0 +1,15 @@
+{
+    "visual_sent_count": 1693,
+    "contextual_sent_count": 2330,
+    "visual_samples": 778,
+    "visual+contextual_samples": 583,
+    "avg_len_as_is_description": 679.3856041131105,
+    "avg_len_visual_description": 286.87146529562983,
+    "max_len_as_is_description": 4781,
+    "max_len_visual_description": 3387,
+    "min_len_as_is_description": 32,
+    "min_len_visual_description": 25,
+    "average_len_visual": 22.495569994093326,
+    "average_len_contextual": 21.59098712446352,
+    "average_len_sentence": 21.97166293810589
+}
