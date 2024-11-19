@@ -8,6 +8,7 @@ Place the checkpoint.pt file in long_clip/checkpoints
 
 ## documentation
 
+**Folders:**  
 ./data:  
 - Current storage for all our data generated within our code
 
@@ -23,11 +24,11 @@ Place the checkpoint.pt file in long_clip/checkpoints
 ./scripts:
 - Scripts used to call individual functions to modify/evaluate our dataset. Note: The functions can be directly called from a pipeline, like meta_processing.py, instead of using this scripts folder.
 
-Individual files:  
+**Individual files:**  
 bins.json - Our dataset after some preprocessing. This is not the finalized version of the dataset, and the whole pre-processing pipeline was not used on it.  
 eval.py - Used for running a Long-CLIP model on our dataset and obtaining evaluation metrics.  
 fine-tune.py - The fine-tuning code for Long-CLIP, see [reference](https://github.com/zer0int/Long-CLIP/blob/main/ft-B-train-LongCLIP-ViT-L-14.py).  
-format.py - Format our dataset to work as input to Long-CLIP.
+format.py - Format our dataset to work as input to Long-CLIP.  
 generate_bins.py - The pipeline used for generating "bins.json".  
 iterate.py/mutate.py - Both deprecated files that aren't used currently.  
 meta_processing.py - Another processing pipeline example, full processing pipeline will be added here soon.  
