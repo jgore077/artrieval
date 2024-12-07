@@ -1,6 +1,7 @@
 from .model import longclip, tokenize
 from .formatting import getImagePaths,preprocessImages
 from ranx import Qrels
+from tqdm import tqdm
 import torch
 import json
 import os
@@ -37,7 +38,7 @@ class Evaluator():
         self.embeddings_file:str=embeddings_file
         self.metrics=metrics
         self._load_metadata()
-        self._make_image_embeddings()
+        self._load_embeddings()
         self._build_keymap()
         self._load_qrel()
         
@@ -51,23 +52,40 @@ class Evaluator():
             os.makedirs(embedding_dir,exist_ok=True)
             
         if not os.path.exists(self.embeddings_file):
+            print("Creating embeddings")
             self.embeddings=self._make_image_embeddings()
             return
         
-        self.embeddings=torch.load(self.embeddings_file,map_location=self.device)
+        print("Loading embeddings")
+        self.embeddings=torch.load(self.embeddings_file,weights_only=True,map_location=self.device)
         
     def _load_qrel(self):
         self.qrel=Qrels.from_file(self.qrel_file,kind="trec")
+       
+    def _make_image_embeddings(self, batch_size=32):
+        files = getImagePaths(self.metadata)
+        all_embeddings = []
         
-    def _make_image_embeddings(self):
-        files=getImagePaths(self.metadata)
-        images=preprocessImages(files,self.preprocess,self.device)
-        embeddings=None
-        with torch.no_grad():
-            embeddings=self.model.encode_image(images)
-
-        torch.save(embeddings,self.embeddings_file)
-        self.embeddings=embeddings
+        # Process in batches
+        for i in tqdm(range(0, len(files), batch_size),desc="Computing image embeddings in batches"):
+            batch_files = files[i:i + batch_size]
+            batch_images = preprocessImages(batch_files, self.preprocess, self.device)
+            
+            with torch.no_grad():
+                # Immediately move embeddings to CPU after computation
+                batch_embeddings = self.model.encode_image(batch_images).cpu()
+                all_embeddings.append(batch_embeddings)
+                
+                # Clear the GPU tensors
+                del batch_images
+                torch.cuda.empty_cache()
+        
+        # Concatenate on CPU
+        embeddings = torch.cat(all_embeddings, dim=0)
+        
+        # Save from CPU memory
+        torch.save(embeddings, self.embeddings_file)
+        self.embeddings = embeddings
     
     
     def _load_metadata(self):
