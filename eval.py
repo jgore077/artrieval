@@ -17,8 +17,3 @@ with open("data/as_is_v_visual/visual.json",encoding="utf-8") as visual_file:
     queries=json.load(visual_file)
     
 scores=evaluator.search(queries)
-score,queries=evaluator.precision_at_1(scores,queries=queries)
-print("p@1",score)
-
-with open("results.json","w",encoding="utf-8") as results_file:
-    results_file.write(json.dumps(queries,indent=4,ensure_ascii=False))
