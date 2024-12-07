@@ -1,6 +1,7 @@
 import json
 import os
 from PIL import Image,UnidentifiedImageError
+from tqdm import tqdm
 
 class Processor():
   def __init__(self,metadata_path,delete:bool=False,ignore_exception:bool=False):
@@ -57,7 +58,7 @@ class Processor():
     If ignore_exception=False upon an integrity violation an exception will be thrown. If true the function will return false if the file fails the integrity check or true if passing.
     """
     ret=True
-    for key in list(self.metadata.keys()):
+    for key in tqdm(list(self.metadata.keys()), desc="Verifying integrity of each sample", unit="entry"):
       if not self.validate_image(key, ignore_exception, delete):
         ret = False
       if not self.validate_entry(key, ignore_exception):

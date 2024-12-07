@@ -1,6 +1,6 @@
 from metaprocessor import *
 
-p=processor.Processor("data/splits/test_original.json", delete=True)
+p=processor.Processor("metadata.json", delete=True)
 p.mutate(visualContextualBins)
 p.mutate(removeEmptyObjects)
 visual_dupes, as_is_dupes = p.iterate(findDuplicateQuerys)

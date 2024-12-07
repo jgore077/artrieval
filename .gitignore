@@ -2,6 +2,7 @@ images/
 image_embeddings/
 images.tar.gz
 metadata.json
+test1.json
 images
 a_dupes.json
 v_dupes.json
