@@ -167,8 +167,8 @@ class ImageTextDataset(Dataset):
         if self.transform:
             image = self.transform(image)
 
-        caption = self.metadata[idx]
-        text = longclip.tokenize([caption])  # Tokenize the caption
+        caption = self.metadata[idx]["description"]
+        text = longclip.tokenize([caption], truncate=True)  # Tokenize the caption
 
         return image, text.squeeze(0)  # Remove the extra dimension
         
@@ -195,8 +195,8 @@ class ContrastiveLoss(nn.Module):
         return (loss_img + loss_txt) / 2
 
 contrastive_loss = ContrastiveLoss(temperature=0.07)
-from torch.cuda.amp import autocast, GradScaler
-scaler = GradScaler('cuda')
+from torch.amp import autocast, GradScaler
+scaler = GradScaler()
 
 
 
@@ -305,7 +305,7 @@ def trainloop():
             batch_logits_texts = []
                
             optimizer.zero_grad()
-            with autocast('cuda'):
+            with autocast(device_type='cuda'):
                 logits_per_image, logits_per_text = model(images, texts)
                 current_batch_size = images.size(0)
                 ground_truth = torch.arange(current_batch_size, device=device)
