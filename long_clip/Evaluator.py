@@ -1,6 +1,6 @@
 from .model import longclip, tokenize
 from .formatting import getImagePaths,preprocessImages
-from ranx import Qrels
+from ranx import Qrels,Run, evaluate as ranx_eval
 from tqdm import tqdm
 import torch
 import json
@@ -131,11 +131,8 @@ class Evaluator():
         scores=sim_matrix(text_features,self.embeddings)
         return scores
     
-    def evaluate(self,scores,queries,k=100):
-        # Dim 0 is the rows and dim 1 is the columns
-        qlen=len(queries)
-        mlen=len(self.metadata)
-        sdim=scores.shape   
+    def scores_to_run(self,scores,queries,k):
+        # Dim 0 is the rows and dim 1 is the columns  
         query_ids=list(queries.keys())
         top_k_values, top_k_indices = torch.topk(scores, k=min(k, scores.shape[1]), dim=1)
         
@@ -150,7 +147,11 @@ class Evaluator():
         query_idx=0
         for row_values, row_indices in zip(values, indices):
             # Create dict of {querykey:{metakey, score}}      
-            results[query_ids[query_idx]]={self.keymap[idx]: score for idx, score in zip(row_indices, row_values)}
+            results[query_ids[query_idx]]={self.keymap[idx]: float(score) for idx, score in zip(row_indices, row_values)}
             query_idx+=1
             
-        return results
+        return Run.from_dict(results)
+    
+    def evaluate(self,scores,queries,k=100):
+        run = self.scores_to_run(scores,queries,k)
+        return ranx_eval(self.qrel,run,self.metricsim)
