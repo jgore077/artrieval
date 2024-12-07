@@ -65,7 +65,7 @@ def load(name: str, device: Union[str, torch.device] = "cuda" if torch.cuda.is_a
     
     model_path = name
 
-    state_dict = torch.load(model_path, map_location="cpu")
+    state_dict = torch.load(model_path, map_location="cpu",weights_only=True)
     
     model = build_model(state_dict or model.state_dict(), load_from_clip = False).to(device)
 

@@ -16,6 +16,14 @@ def download_spacy():
 def assemble_visual_description(vdict)->str:
     return ' '.join(list(vdict.values()))
 
+def assemble_visual_queries(file_path)->dict:
+    with open(file_path,"r",encoding="utf-8") as f:
+        data=json.load(f)
+    queries={}
+    for key in data:
+        queries[key]=assemble_visual_description(data[key]["visual"])
+        
+    return queries
 
 def write_qrel(qrels_path,qrels):
        """
