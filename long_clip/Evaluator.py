@@ -1,5 +1,6 @@
 from .model import longclip, tokenize
 from .formatting import getImagePaths,preprocessImages
+from ranx import Qrels
 import torch
 import json
 import os
@@ -23,6 +24,7 @@ class Evaluator():
     def __init__(self,
         long_clip_model_name,
         metadata_file,
+        qrel_file,
         embeddings_file,
         metrics:list[str],
         device,
@@ -31,17 +33,16 @@ class Evaluator():
         self.long_clip_model_name=long_clip_model_name
         self.model,self.preprocess=longclip.load(long_clip_model_name,device=self.device)
         self.metadata_file:str=metadata_file
+        self.qrel_file=qrel_file
         self.embeddings_file:str=embeddings_file
         self.metrics=metrics
         self._load_metadata()
         self._make_image_embeddings()
         self._build_keymap()
-        
+        self._load_qrel()
         
         
     def _load_embeddings(self):
-        
-        
         if not self.embeddings_file.endswith('.pt'):
             raise Exception("the embeddings file must be a .pt file")
         
@@ -55,6 +56,8 @@ class Evaluator():
         
         self.embeddings=torch.load(self.embeddings_file,map_location=self.device)
         
+    def _load_qrel(self):
+        self.qrel=Qrels.from_file(self.qrel_file,kind="trec")
         
     def _make_image_embeddings(self):
         files=getImagePaths(self.metadata)
