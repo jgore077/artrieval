@@ -147,7 +147,7 @@ class Evaluator():
         query_idx=0
         for row_values, row_indices in zip(values, indices):
             # Create dict of {querykey:{metakey, score}}      
-            results[query_ids[query_idx]]={self.keymap[idx]: float(score) for idx, score in zip(row_indices, row_values)}
+            results[query_ids[query_idx]]={self.keymap[idx]: score for idx, score in zip(row_indices, row_values)}
             query_idx+=1
             
         return Run.from_dict(results)
