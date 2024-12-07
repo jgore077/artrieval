@@ -56,8 +56,9 @@ class Evaluator():
             self.embeddings=self._make_image_embeddings()
             return
         
-        print("Loading embeddings")
-        self.embeddings=torch.load(self.embeddings_file,weights_only=True,map_location=self.device)
+        print(f"Loading embeddings from {self.embeddings_file}")
+        # Load image embeddings to cpu
+        self.embeddings=torch.load(self.embeddings_file,weights_only=True).cpu()
         
     def _load_qrel(self):
         self.qrel=Qrels.from_file(self.qrel_file,kind="trec")
@@ -98,17 +99,35 @@ class Evaluator():
                 self.keymap[key]=i
                 
 
-    def search(self,querys:dict|str,k=100):
+    def search(self,querys:dict|str,k=100,batch_size=32):
         """
         Takes a path to a querys file or a dictionary of querys then finds the top k results for each query
         """
         if type(querys)==str:
             querys=load_querys(querys)
             
-        encoded_querys=longclip.tokenize(list(querys.values()),truncate=True).to(self.device)
-        text_features = None
-        with torch.no_grad():
-             text_features=self.model.encode_text(encoded_querys)
+        encoded_querys=longclip.tokenize(list(querys.values()),truncate=True).to(self.device)    
+        all_text_features = []
+    
+        # Process encoded queries in batches
+        for i in range(0, encoded_querys.size(0), batch_size):
+            batch_encoded = encoded_querys[i:i + batch_size]
+            
+            with torch.no_grad():
+                batch_features = self.model.encode_text(batch_encoded)
+                # Move features to CPU immediately
+                all_text_features.append(batch_features.cpu())
+                
+                # Clean up GPU memory
+                del batch_features
+                torch.cuda.empty_cache()
+        
+        # Clean up encoded queries
+        del encoded_querys
+        torch.cuda.empty_cache()
+        
+        # Combine text features on CPU
+        text_features = torch.cat(all_text_features, dim=0)
         scores=sim_matrix(text_features,self.embeddings)
         return scores
     
