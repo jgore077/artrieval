@@ -3,7 +3,7 @@ import os
 from PIL import Image,UnidentifiedImageError
 
 class Processor():
-  def __init__(self,metadata_path,delete:bool=False,ignore_exception:bool=False):
+  def __init__(self,metadata_path,delete:bool=True,ignore_exception:bool=False):
     self.metadata_path=metadata_path
     with open(metadata_path,'r',encoding='utf-8') as file:
       self.metadata=json.loads(file.read())
