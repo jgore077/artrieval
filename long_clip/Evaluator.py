@@ -106,7 +106,7 @@ class Evaluator():
         if type(querys)==str:
             querys=load_querys(querys)
             
-        encoded_querys=longclip.tokenize(list(querys.values()),truncate=truncate).to(self.device)    
+        encoded_querys=tokenize(list(querys.values()),truncate=truncate).to(self.device)    
         all_text_features = []
     
         # Process encoded queries in batches
