@@ -17,3 +17,4 @@ with open("data/as_is_v_visual/visual.json",encoding="utf-8") as visual_file:
     queries=json.load(visual_file)
     
 scores=evaluator.search(queries)
+evaluator.evaluate(scores,queries)

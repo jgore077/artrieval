@@ -96,17 +96,17 @@ class Evaluator():
     def _build_keymap(self):
         self.keymap={}
         for i,key in enumerate(self.metadata):
-                self.keymap[key]=i
+                self.keymap[i]=key
                 
 
-    def search(self,querys:dict|str,k=100,batch_size=32):
+    def search(self,querys:dict|str,truncate=True,batch_size=32):
         """
         Takes a path to a querys file or a dictionary of querys then finds the top k results for each query
         """
         if type(querys)==str:
             querys=load_querys(querys)
             
-        encoded_querys=longclip.tokenize(list(querys.values()),truncate=True).to(self.device)    
+        encoded_querys=longclip.tokenize(list(querys.values()),truncate=truncate).to(self.device)    
         all_text_features = []
     
         # Process encoded queries in batches
@@ -131,3 +131,26 @@ class Evaluator():
         scores=sim_matrix(text_features,self.embeddings)
         return scores
     
+    def evaluate(self,scores,queries,k=100):
+        # Dim 0 is the rows and dim 1 is the columns
+        qlen=len(queries)
+        mlen=len(self.metadata)
+        sdim=scores.shape   
+        query_ids=list(queries.keys())
+        top_k_values, top_k_indices = torch.topk(scores, k=min(k, scores.shape[1]), dim=1)
+        
+        # Convert tensors to numpy for easier processing
+        values = top_k_values.numpy()
+        indices = top_k_indices.numpy()
+        
+        # Create results list
+        results = {}
+        
+        # Process each row
+        query_idx=0
+        for row_values, row_indices in zip(values, indices):
+            # Create dict of {querykey:{metakey, score}}      
+            results[query_ids[query_idx]]={self.keymap[idx]: score for idx, score in zip(row_indices, row_values)}
+            query_idx+=1
+            
+        return results
