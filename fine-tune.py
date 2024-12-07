@@ -150,11 +150,13 @@ def calculate_metrics(logits, ground_truth):
     return acc, f1
 
 class ImageTextDataset(Dataset):
-    def __init__(self, annotations_file, transform=None):
+    def __init__(self, metadata_path, transform=None):
         self.transform = transform
-        with open(annotations_file, 'r') as f:
-            self.annotations = json.load(f)
-        self.image_paths = list(self.annotations.keys())
+        with open(metadata_path,'r',encoding='utf-8') as file:
+            self.metadata=list(json.loads(file.read()).values())
+        self.image_paths = []
+        for sample in self.metadata:
+            self.image_paths.append(sample["file_path"])
 
     def __len__(self):
         return len(self.image_paths)
@@ -165,8 +167,8 @@ class ImageTextDataset(Dataset):
         if self.transform:
             image = self.transform(image)
 
-        label = self.annotations[self.image_paths[idx]]
-        text = longclip.tokenize([label])  # Tokenize the label
+        caption = self.metadata[idx]
+        text = longclip.tokenize([caption])  # Tokenize the caption
 
         return image, text.squeeze(0)  # Remove the extra dimension
         
