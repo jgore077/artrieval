@@ -25,7 +25,7 @@ def countBinFields(metadata:dict, result_path:str):
     contextual_sentences_length = 0
     for sample in metadata.values():
         if sample["visual"] and sample["contextual"]: # if sample has visual and contextual sentences
-            visual_description_lengths.append(len(assemble_visual_description(sample["visual"])))
+            visual_description_lengths.append(len(assemble_visual_description(sample["visual"]).split()))
             results["visual_sent_count"] = results.get("visual_sent_count", 0) + len(sample["visual"])
             results["contextual_sent_count"] = results.get("contextual_sent_count", 0) + len(sample["contextual"])
             results["visual_samples"] = results.get("visual_samples", 0) + 1
@@ -35,12 +35,12 @@ def countBinFields(metadata:dict, result_path:str):
             for cSentence in sample["contextual"].values():
                 contextual_sentences_length += len(cSentence.split())
         elif sample["visual"]: # if sample only has visual sentences
-            visual_description_lengths.append(len(sample["description"]))
+            visual_description_lengths.append(len(sample["description"].split()))
             results["visual_sent_count"] = results.get("visual_sent_count", 0) + len(sample["visual"])
             results["visual_samples"] = results.get("visual_samples", 0) + 1 
             for vSentence in sample["visual"].values():
                 visual_sentences_length += len(vSentence.split())
-        as_is_description_lengths.append(len(sample["description"]))
+        as_is_description_lengths.append(len(sample["description"].split()))
     results["avg_len_as_is_description"] = sum(as_is_description_lengths) / len(as_is_description_lengths)
     results["avg_len_visual_description"] = sum(visual_description_lengths) / len(visual_description_lengths)
     results["max_len_as_is_description"] = max(as_is_description_lengths)

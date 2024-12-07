@@ -16,7 +16,7 @@ print(f"Visual Duplicates Querys: {len(v)}",f"As-Is Duplicate Querys: {len(a)}")
 with open("v_dupes.json",'w',encoding="utf-8") as f:
     json.dump(v,f,indent=4,ensure_ascii=False)
 with open("a_dupes.json",'w',encoding="utf-8") as f2:
-    json.dump(v,f2,indent=4,ensure_ascii=False)
+    json.dump(a,f2,indent=4,ensure_ascii=False)
 
 v_num=0
 a_num=0
