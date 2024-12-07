@@ -228,11 +228,11 @@ batch_size = 40
 # Confusing labels will confuse CLIP, though. So, maybe don't use **all** the crazy labels you got from CLIP Interrogator aka CLIP+BLIP...
 
 # Get dataset and dataloader
-train_dataset = ImageTextDataset("train.json", transform=preprocess)
+train_dataset = ImageTextDataset("data/splits/train.json", transform=preprocess)
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
 # Validation dataset and dataloader - use images from the training dataset that are NOT in the above training data! Recommended: 10-20% of full dataset.
-val_dataset = ImageTextDataset("val.json", transform=preprocess)
+val_dataset = ImageTextDataset("data/splits/val.json", transform=preprocess)
 val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
 
 total_steps = len(train_dataloader) * EPOCHS

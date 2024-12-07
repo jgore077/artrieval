@@ -1,15 +1,15 @@
 {
-    "visual_sent_count": 1693,
-    "contextual_sent_count": 2330,
-    "visual_samples": 778,
-    "visual+contextual_samples": 583,
-    "avg_len_as_is_description": 113.61439588688945,
-    "avg_len_visual_description": 48.95244215938303,
-    "max_len_as_is_description": 825,
-    "max_len_visual_description": 605,
+    "visual_sent_count": 31909,
+    "contextual_sent_count": 43015,
+    "visual_samples": 14409,
+    "visual+contextual_samples": 10986,
+    "avg_len_as_is_description": 117.2735790131168,
+    "avg_len_visual_description": 51.56353667846485,
+    "max_len_as_is_description": 1296,
+    "max_len_visual_description": 840,
     "min_len_as_is_description": 5,
-    "min_len_visual_description": 5,
-    "average_len_visual": 22.495569994093326,
-    "average_len_contextual": 21.59098712446352,
-    "average_len_sentence": 21.97166293810589
+    "min_len_visual_description": 2,
+    "average_len_visual": 23.284308502303425,
+    "average_len_contextual": 22.01129838428455,
+    "average_len_sentence": 22.553454166889114
 }
