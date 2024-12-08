@@ -154,4 +154,4 @@ class Evaluator():
     
     def evaluate(self,scores,queries,k=100):
         run = self.scores_to_run(scores,queries,k)
-        return ranx_eval(self.qrel,run,self.metrics)
+        return ranx_eval(self.qrel,run,self.metrics,make_comparable=True)
