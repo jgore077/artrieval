@@ -53,12 +53,22 @@ def write_qrel(qrels_path,qrels):
 
 def metadata_to_qrel(qrels_path, metadata):
     """
-    Take a metadata file (.json) and get a qrel file (.tsv) *assuming only true sample is self
+    Take metadata and get a qrel file (.tsv) *assuming only true sample is self
     """
     qrel_2d = []
     for sample_id, sample in metadata.items():
         qrel_2d.append([sample_id, 0, sample_id, 1])
     write_qrel(qrels_path,qrel_2d)
+
+def metadata_to_queries(metadata, path, query_type:str="as-is"):
+    """
+    Take metadata and convert to format that is required by Evaluator class
+    """
+    queries = {}
+    for sample_id, sample in metadata.items():
+        queries[sample_id] = query_assembly(query_type, sample)
+    with open(path,'w',encoding='utf-8') as f:
+        f.write(json.dumps(queries,indent=4,ensure_ascii=False))
 
 def write_querys(querys_path,querys):
     """

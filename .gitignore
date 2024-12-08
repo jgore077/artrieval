@@ -10,3 +10,4 @@ v_dupes.json
 *.pyc
 long_clip/checkpoints/**/*.pt
 .venv
+ft-*

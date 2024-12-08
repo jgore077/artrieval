@@ -230,11 +230,11 @@ batch_size = 40
 # Confusing labels will confuse CLIP, though. So, maybe don't use **all** the crazy labels you got from CLIP Interrogator aka CLIP+BLIP...
 
 # Get dataset and dataloader
-train_dataset = ImageTextDataset("data/splits/train.json", query_type="as-is", transform=preprocess)
+train_dataset = ImageTextDataset("data/splits/train.json", query_type="visual", transform=preprocess)
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
 # Validation dataset and dataloader - use images from the training dataset that are NOT in the above training data! Recommended: 10-20% of full dataset.
-val_dataset = ImageTextDataset("data/splits/val.json", query_type="as-is", transform=preprocess)
+val_dataset = ImageTextDataset("data/splits/val.json", query_type="visual", transform=preprocess)
 val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
 
 total_steps = len(train_dataloader) * EPOCHS
@@ -403,8 +403,8 @@ def trainloop():
             f.write(f"Epoch {epoch + 1}/{EPOCHS} - Training Loss: {avg_train_loss:.4f}, Validation Loss: {avg_val_loss:.4f}\n")
             f.write("============================================================\n")
 
-        # Save model every 5 epochs + save final model
-        if (epoch + 1) % 5 == 0 or epoch == EPOCHS - 1:
+        # Save model every <> epochs + save final model
+        if (epoch + 1) % 1 == 0 or epoch == EPOCHS - 1:
             model_path = f"{ft_checkpoints_folder}/longclip_ft_{epoch+1}.pt"
             torch.save(model, model_path)      
             print(Fore.GREEN + f"Model saved: {model_path}" + Style.RESET_ALL)
