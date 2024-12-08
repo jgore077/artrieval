@@ -16,6 +16,18 @@ def download_spacy():
 def assemble_visual_description(vdict)->str:
     return ' '.join(list(vdict.values()))
 
+def assemble_contextual_description(cdict)->str:
+    return ' '.join(list(cdict.values()))
+
+def query_assembly(query_type,obj)->str:
+  match query_type:
+    case "contextual":
+        return assemble_contextual_description(obj["contextual"])
+    case "visual":
+        return assemble_visual_description(obj["visual"])
+    case "as-is":
+        return obj["description"]
+      
 def assemble_visual_queries(file_path)->dict:
     with open(file_path,"r",encoding="utf-8") as f:
         data=json.load(f)
