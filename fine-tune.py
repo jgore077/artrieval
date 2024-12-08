@@ -18,6 +18,7 @@ from torch.optim.lr_scheduler import OneCycleLR
 import random
 from colorama import Fore, Style
 from tqdm import tqdm
+from metaprocessor.utils import query_assembly
 training_losses = []
 validation_losses = []
 print("\n")
@@ -150,8 +151,9 @@ def calculate_metrics(logits, ground_truth):
     return acc, f1
 
 class ImageTextDataset(Dataset):
-    def __init__(self, metadata_path, transform=None):
+    def __init__(self, metadata_path, query_type="as-is", transform=None):
         self.transform = transform
+        self.query_type=query_type
         with open(metadata_path,'r',encoding='utf-8') as file:
             self.metadata=list(json.loads(file.read()).values())
         self.image_paths = []
@@ -167,7 +169,7 @@ class ImageTextDataset(Dataset):
         if self.transform:
             image = self.transform(image)
 
-        caption = self.metadata[idx]["description"]
+        caption = query_assembly(self.query_type, self.metadata[idx])
         text = longclip.tokenize([caption], truncate=True)  # Tokenize the caption
 
         return image, text.squeeze(0)  # Remove the extra dimension
@@ -228,11 +230,11 @@ batch_size = 40
 # Confusing labels will confuse CLIP, though. So, maybe don't use **all** the crazy labels you got from CLIP Interrogator aka CLIP+BLIP...
 
 # Get dataset and dataloader
-train_dataset = ImageTextDataset("data/splits/train.json", transform=preprocess)
+train_dataset = ImageTextDataset("data/splits/train.json", query_type="as-is", transform=preprocess)
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
 # Validation dataset and dataloader - use images from the training dataset that are NOT in the above training data! Recommended: 10-20% of full dataset.
-val_dataset = ImageTextDataset("data/splits/val.json", transform=preprocess)
+val_dataset = ImageTextDataset("data/splits/val.json", query_type="as-is", transform=preprocess)
 val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
 
 total_steps = len(train_dataloader) * EPOCHS
