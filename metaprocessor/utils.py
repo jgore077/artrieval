@@ -27,6 +27,15 @@ def query_assembly(query_type,obj)->str:
         return assemble_visual_description(obj["visual"])
     case "as-is":
         return obj["description"]
+      
+def assemble_visual_queries(file_path)->dict:
+    with open(file_path,"r",encoding="utf-8") as f:
+        data=json.load(f)
+    queries={}
+    for key in data:
+        queries[key]=assemble_visual_description(data[key]["visual"])
+        
+    return queries
 
 def write_qrel(qrels_path,qrels):
        """
