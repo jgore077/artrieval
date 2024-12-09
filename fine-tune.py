@@ -221,7 +221,7 @@ unfreeze_all = True
 # Epochs: Defaulting to saving every 5 epochs (see very end of code). Consider saving even more often + stop training early and use previous checkpoint if you see overfit.
 # If the val loss is not decreasing with loss or val even increases 
 EPOCHS = 50
-learning_rate = 5e-7
+learning_rate = 1e-7
 batch_size = 40
 
 # Search this code for: label = random.choice([labels[0], labels[1]])
@@ -230,11 +230,11 @@ batch_size = 40
 # Confusing labels will confuse CLIP, though. So, maybe don't use **all** the crazy labels you got from CLIP Interrogator aka CLIP+BLIP...
 
 # Get dataset and dataloader
-train_dataset = ImageTextDataset("data/splits/train.json", query_type="visual", transform=preprocess)
+train_dataset = ImageTextDataset("data/splits/train.json", query_type="as-is", transform=preprocess)
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
 # Validation dataset and dataloader - use images from the training dataset that are NOT in the above training data! Recommended: 10-20% of full dataset.
-val_dataset = ImageTextDataset("data/splits/val.json", query_type="visual", transform=preprocess)
+val_dataset = ImageTextDataset("data/splits/val.json", query_type="as-is", transform=preprocess)
 val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
 
 total_steps = len(train_dataloader) * EPOCHS
@@ -406,7 +406,7 @@ def trainloop():
         # Save model every <> epochs + save final model
         if (epoch + 1) % 1 == 0 or epoch == EPOCHS - 1:
             model_path = f"{ft_checkpoints_folder}/longclip_ft_{epoch+1}.pt"
-            torch.save(model, model_path)      
+            torch.save(model.state_dict(), model_path)      
             print(Fore.GREEN + f"Model saved: {model_path}" + Style.RESET_ALL)
             
             
